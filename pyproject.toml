@@ -1,0 +1,28 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pdf2xlsx"
+version = "0.1.0"
+authors = [
+  { name="Rosto4eks", email="rosto4eks@gmail.com" },
+]
+description = "extract tables from scanned pdf via opencv and easyocr"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "numpy",
+    "pandas",
+    "tqdm",
+    "pillow",
+    "pdf2image",
+    "opencv-contrib-python-headless",
+    "easyocr"
+
+]
