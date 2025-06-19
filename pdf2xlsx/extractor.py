@@ -8,23 +8,11 @@ from tqdm import tqdm
 class Extractor():
     def __init__(
             self, 
-            path_to_pdf: str, 
-            output_path: str,
             lang_list=["ru", "en"],
-            dpi=300, 
-            char_cols=[],
-            num_cols=[],
         ):
-        self.__io_handler = FileHandler(
-            path_to_pdf,
-            output_path,
-            dpi=dpi
-        )
 
         self.__reader = Reader(
             lang_list=lang_list, 
-            char_cols=char_cols,
-            num_cols=num_cols,
         )
         
         self.__post_processor = PostProcessor(
@@ -34,8 +22,8 @@ class Extractor():
             has_header_on_new_page=True,
         )
         
-    def extract(self):
-        images = self.__io_handler.read_pdf()
+    def extract(self, path_to_pdf: str, path_to_xlsx: str, char_columns=[], num_columns=[], dpi=300):
+        images = FileHandler.read_pdf(path_to_pdf, dpi)
 
         tables = []
         for image in tqdm(images):
@@ -44,10 +32,10 @@ class Extractor():
             cells_array = TableProcessor.get_cells(processed_image)
 
             for cells in cells_array:
-                table = self.__reader.read(cells)
+                table = self.__reader.read(cells, char_columns, num_columns)
                 if table and any(any(cell.strip() for cell in row) for row in table):
                     tables.append(table)
 
         tables = self.__post_processor.process(tables)
 
-        self.__io_handler.save_to_excel(tables)
+        FileHandler.save_to_excel(path_to_xlsx, tables)
