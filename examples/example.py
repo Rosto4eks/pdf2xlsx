@@ -2,11 +2,12 @@ from pdf2xlsx import Extractor
 
 if __name__ == "__main__":
     extractor = Extractor(
+        lang_list=["ru"],
+    )
+    extractor.extract(
         "./pdfs/d.pdf",
         "./xlsx/tables.xlsx",
-        lang_list=["ru"],
+        char_columns=[1, 2],
+        num_columns=[0, 5],
         dpi=300,
-        char_cols=[1, 2],
-        num_cols=[0, 5]
     )
-    extractor.extract()
