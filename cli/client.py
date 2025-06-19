@@ -12,6 +12,9 @@ class Client():
         parser.add_argument('--xlsx_path', type=str, default="", help='path to xlsx')
 
         self.parser = parser
+        self.extractor = Extractor(
+            lang_list=["ru"],
+        )
 
     def __parse_paths(self):
         args = self.parser.parse_args()
@@ -45,15 +48,13 @@ class Client():
     def run(self):
         pdf_path, xlsx_path = self.__parse_paths()
 
-        extractor = Extractor(
+        self.extractor.extract(
             pdf_path,
             xlsx_path,
-            lang_list=["ru"],
-            dpi=300,
-            char_cols=[1, 2],
-            num_cols=[0, 5]
+            char_columns=[1, 2],
+            num_columns=[0, 5],
+            dpi = 300,
         )
-        extractor.extract()
 
 if __name__ == "__main__":
     client = Client()
