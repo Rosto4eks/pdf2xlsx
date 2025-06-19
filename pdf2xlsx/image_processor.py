@@ -40,26 +40,48 @@ class ImageProcessor():
     @staticmethod
     def tight_crop(img, pad=0):
         H, W = img.shape[:2]
+
+        num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(
+            img, connectivity=8
+        )
+
+        mask = np.zeros_like(img)
+
+        for i in range(1, num_labels):
+            area = stats[i, cv2.CC_STAT_AREA]
+            if area > 25:
+                mask[labels == i] = 255
+
+        img = mask
+
         coords = cv2.findNonZero(img) 
         x, y, w, h = cv2.boundingRect(coords)
 
-        x0 = max(x - pad, 0)
-        y0 = max(y - pad, 0)
-        x1 = min(x + w + pad, W)
-        y1 = min(y + h + pad, H)
+        x0 = max(x, 0)
+        y0 = max(y, 0)
+        x1 = min(x + w, W)
+        y1 = min(y + h, H)
 
-        return img[y0:y1, x0:x1]
+        img = cv2.copyMakeBorder(
+            img[y0:y1, x0:x1], 
+            pad, pad, pad, pad, 
+            cv2.BORDER_CONSTANT,
+            value=0
+        )
+
+        return img
     
     @staticmethod
     def process(image):
         image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2GRAY)
+
         image = cv2.adaptiveThreshold(
             src=image,
             maxValue=255,
             adaptiveMethod=cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
             thresholdType=cv2.THRESH_BINARY_INV,
-            blockSize=61,
-            C=2
+            blockSize=19,
+            C=10
         )        
 
         rotation_angle = ImageProcessor.__detect_rotation(image)

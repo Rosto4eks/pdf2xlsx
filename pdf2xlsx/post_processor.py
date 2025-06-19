@@ -16,7 +16,7 @@ class PostProcessor():
     def __isNewTable(self, index_list: pd.Series) -> bool:
         try:
             numeric_values = pd.to_numeric(index_list, errors='coerce')
-            return ((numeric_values >= 1) & (numeric_values <= 10)).any()
+            return ((numeric_values >= 1) & (numeric_values <= 3)).any()
         except:
             return False
     

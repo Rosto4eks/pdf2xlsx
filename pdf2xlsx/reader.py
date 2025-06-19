@@ -4,7 +4,7 @@ from .image_processor import ImageProcessor
 class Reader():
     digit_list = "0123456789"
     char_list ="абвгдеёжзийклмнопрстуфхцчшщьыъэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЫЪЭЮЯ.-№ "
-    dchar_list = char_list + digit_list + "()"
+    dchar_list = char_list + digit_list + "()%/"
     def __init__(self, lang_list=["ru", "en"], char_cols=[], num_cols=[]):
         self.reader = easyocr.Reader(lang_list=lang_list)
         self.char_cols = char_cols
@@ -26,9 +26,14 @@ class Reader():
                 if row_num == 0:
                     allowlist = None
 
-                result = self.reader.readtext(cell_image, paragraph=True, allowlist=allowlist)
-                
-                text = ' '.join([text[1] for text in result]).strip()
+                result = self.reader.readtext(
+                    cell_image, 
+                    paragraph=True, 
+                    allowlist=allowlist, 
+                    detail=0, 
+                    mag_ratio=1.2,
+                )
+                text = result[0] if len(result) > 0 else ""
                 row_data.append(text)
 
             data.append(row_data)

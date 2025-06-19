@@ -7,8 +7,8 @@ class TableProcessor():
     def __detect_tables(image):
         h, w = image.shape[:2]
         
-        hor_kernel_length = max(w // 10, 10)
-        ver_kernel_length = max(h // 10, 10)
+        hor_kernel_length = 40
+        ver_kernel_length = 50
 
         horizontal_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (hor_kernel_length, 1))
         vertical_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (1, ver_kernel_length))
@@ -18,9 +18,11 @@ class TableProcessor():
         
         table_mask = cv2.add(horizontal_lines, vertical_lines)
         
-        kernel_close = cv2.getStructuringElement(cv2.MORPH_RECT, (7, 7))
+        kernel_close = cv2.getStructuringElement(cv2.MORPH_RECT, (20, 1))
         table_mask = cv2.morphologyEx(table_mask, cv2.MORPH_CLOSE, kernel_close)
-        
+        kernel_close = cv2.getStructuringElement(cv2.MORPH_RECT, (1, 20))
+        table_mask = cv2.morphologyEx(table_mask, cv2.MORPH_CLOSE, kernel_close)
+
         contours, _ = cv2.findContours(table_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         
         tables = []
@@ -28,7 +30,9 @@ class TableProcessor():
 
 
         dilation_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (9, 9))
-        table_mask = cv2.dilate(table_mask, dilation_kernel, iterations=1)
+        table_mask = cv2.dilate(table_mask, dilation_kernel)
+
+
         img_without_lines = image.copy()
         img_without_lines[table_mask > 0] = 0
         
@@ -40,6 +44,7 @@ class TableProcessor():
                 table_image = image[y:y + h_cont, x:x + w_cont]
                 tables.append((table_image, img_without_lines, (x, y)))
         
+        tables.sort(key=lambda x: x[2][1])
         return tables
     
     @staticmethod

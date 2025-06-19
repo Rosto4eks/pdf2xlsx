@@ -2,7 +2,7 @@ from pdf2xlsx import Extractor
 
 if __name__ == "__main__":
     extractor = Extractor(
-        "./pdfs/document.pdf",
+        "./pdfs/d.pdf",
         "./xlsx/tables.xlsx",
         lang_list=["ru"],
         dpi=300,
